@@ -1,0 +1,13 @@
+diff --git a/syncstorage-mysql/src/models.rs b/syncstorage-mysql/src/models.rs
+index 1114f21..5cce6a8 100644
+--- a/syncstorage-mysql/src/models.rs
++++ b/syncstorage-mysql/src/models.rs
+@@ -134,7 +134,7 @@ impl MysqlDb {
+             .select(user_collections::modified)
+             .filter(user_collections::user_id.eq(user_id))
+             .filter(user_collections::collection_id.eq(collection_id))
+-            .for_share()
++            .for_update()
+             .first(&mut self.conn)
+             .await
+             .optional()?;

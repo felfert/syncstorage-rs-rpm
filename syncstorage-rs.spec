@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -41,6 +41,9 @@ Patch1:         syncstorage-rs-populate-tokendb.patch
 # Dynamically initialize node url and max permitted users in nodes table.
 Patch2:         syncstorage-rs-updatenodes.patch
 
+# Fix mariadb compatibility
+Patch3:         syncstorage-rs-mariadb-compat.patch
+
 %description
 %{name} is Mozilla's new firefox sync server written in Rust.
 
@@ -49,6 +52,7 @@ Patch2:         syncstorage-rs-updatenodes.patch
 %patch 0 -p1 -b .nosentry
 %patch 1 -p1 -b .populatedb
 %patch 2 -p1 -b .updatenodes
+%patch 3 -p1 -b .mariadb
 cp %{SOURCE1} .
 
 %build
@@ -78,7 +82,7 @@ port = 8000        # default
 human_logs = 1
 
 # MySQL DSN:
-syncstorage.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync?unix_socket=/var/lib/mysql/mysql.sock"
+syncstorage.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync"
 
 # disable quota limits
 syncstorage.enable_quota = 0
@@ -88,7 +92,7 @@ syncstorage.enabled = true
 syncstorage.limits.max_total_records = 1666 # See issues #298/#333
 
 # MySQL DSN (same as above, as table names are distinct
-tokenserver.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync?unix_socket=/var/lib/mysql/mysql.sock"
+tokenserver.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync"
 
 tokenserver.enabled = true
 tokenserver.run_migrations = true
@@ -150,6 +154,8 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Fixed mariadb compatibility
 * Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Fixed config file path
 * Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
