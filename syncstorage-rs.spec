@@ -24,6 +24,8 @@ Suggests:       mariadb-server
 Source0:        %{forgesource0}
 URL:            %{forgeurl0}
 
+Source1:        README-FEDORA.md
+
 # Remove callbacks to Sentry API in order to disable sending metrics to mozilla foundation.
 # See: https://www.kyzer.me.uk/syncserver/#Code_patch:_remove_the_callbacks_to_Sentry_API
 Patch0:         syncstorage-rs-nosentry.patch
@@ -63,11 +65,14 @@ EOF
 cat > syncserver.toml << EOF
 master_secret = "CHANGE_ME!!!"
 
+host = "localhost" # default
+port = 8000        # default
+
 # removing this line will default to moz_json formatted logs (which is preferred for production envs)
 human_logs = 1
 
 # MySQL DSN:
-#syncstorage.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync?unix_socket=/var/lib/mysql/mysql.sock"
+syncstorage.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync?unix_socket=/var/lib/mysql/mysql.sock"
 
 # disable quota limits
 syncstorage.enable_quota = 0
@@ -76,9 +81,8 @@ syncstorage.enable_quota = 0
 syncstorage.enabled = true
 syncstorage.limits.max_total_records = 1666 # See issues #298/#333
 
-# Tokenserver settings:
 # MySQL DSN (same as above, as table names are distinct
-#tokenserver.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync?unix_socket=/var/lib/mysql/mysql.sock"
+tokenserver.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync?unix_socket=/var/lib/mysql/mysql.sock"
 
 tokenserver.enabled = true
 tokenserver.run_migrations = true
@@ -96,14 +100,14 @@ EOF
 cat > syncserver.env << EOF
 # Define environment variables for syncserver here
 
-# Global lof level
+# Global log level
 RUST_LOG=info
 
 # The public URL to set in the node record of the nodes table
 PUBLIC_URL=https://publicurl.tld
 
 # The maximum number of sync client users for that node
-MAX_CLIENTS=5
+MAX_CLIENTS=1
 EOF
 
 %install
@@ -137,6 +141,7 @@ exit 0
 %{_unitdir}/*
 %config(noreplace) %{_sysconfdir}/sysconfig/syncserver
 %attr(0640,root,%{saccount}) %config(noreplace) %{_sysconfdir}/syncserver/*
+%doc README-FEDORA.md
 
 %changelog
 * Mon Oct  6 2025 Fritz Elfert <fritz@fritz-elfert.de>
