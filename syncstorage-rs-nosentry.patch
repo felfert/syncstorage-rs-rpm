@@ -1,0 +1,31 @@
+diff --git a/syncserver/src/server/mod.rs b/syncserver/src/server/mod.rs
+index f1e0a18..4c5caf5 100644
+--- a/syncserver/src/server/mod.rs
++++ b/syncserver/src/server/mod.rs
+@@ -14,7 +14,7 @@ use actix_web::{
+ use cadence::{Gauged, StatsdClient};
+ use futures::future::{self, Ready};
+ use syncserver_common::{
+-    middleware::sentry::SentryWrapper, BlockingThreadpool, BlockingThreadpoolMetrics, Metrics,
++    BlockingThreadpool, BlockingThreadpoolMetrics, Metrics,
+     Taggable,
+ };
+ use syncserver_db_common::{GetPoolState, PoolState};
+@@ -95,7 +95,6 @@ macro_rules! build_app {
+             // These will wrap all outbound responses with matching status codes.
+             .wrap(ErrorHandlers::new().handler(StatusCode::NOT_FOUND, ApiError::render_404))
+             // These are our wrappers
+-            .wrap(SentryWrapper::<ApiError>::new($metrics.clone()))
+             .wrap_fn(middleware::weave::set_weave_timestamp)
+             .wrap_fn(tokenserver::logging::handle_request_log_line)
+             .wrap_fn(middleware::rejectua::reject_user_agent)
+@@ -201,9 +200,6 @@ macro_rules! build_app_without_syncstorage {
+             // Middleware is applied LIFO
+             // These will wrap all outbound responses with matching status codes.
+             .wrap(ErrorHandlers::new().handler(StatusCode::NOT_FOUND, ApiError::render_404))
+-            .wrap(SentryWrapper::<tokenserver_common::TokenserverError>::new(
+-                $metrics.clone(),
+-            ))
+             // These are our wrappers
+             .wrap_fn(tokenserver::logging::handle_request_log_line)
+             .wrap_fn(middleware::rejectua::reject_user_agent)
