@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -63,7 +63,7 @@ After=network.target mariadb.service
 Type=simple
 User=%{saccount}
 EnvironmentFile=-/etc/sysconfig/syncserver
-ExecStart=/usr/libexec/syncserver --config /etc/syncserver.toml
+ExecStart=/usr/libexec/syncserver --config /etc/syncserver/syncserver.toml
 
 [Install]
 WantedBy=multi-user.target
@@ -150,6 +150,8 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Fixed config file path
 * Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Tweaked default config
 * Mon Oct  6 2025 Fritz Elfert <fritz@fritz-elfert.de>
