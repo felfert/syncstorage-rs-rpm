@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -56,7 +56,7 @@ Patch3:         syncstorage-rs-mariadb-compat.patch
 cp %{SOURCE1} .
 
 %build
-cargo install --path ./syncserver --no-default-features --features=syncstorage-db/mysql --locked
+cargo install --debug --path ./syncserver --no-default-features --features=syncstorage-db/mysql --locked
 cat > syncserver.service << EOF
 [Unit]
 Description=Mozilla Firefox Sync
@@ -121,7 +121,7 @@ MAX_CLIENTS=1
 EOF
 
 %install
-%{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/release/syncserver
+%{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/debug/syncserver
 %{__install} -D -m 0644 -t %{buildroot}%{_unitdir} syncserver.service
 %{__install} -D -m 0640 -t %{buildroot}%{_sysconfdir}/syncserver syncserver.toml
 %{__install} -D -m 0644 syncserver.env %{buildroot}%{_sysconfdir}/sysconfig/syncserver
@@ -154,6 +154,8 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Package debug build for now
 * Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Fixed mariadb compatibility
 * Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
