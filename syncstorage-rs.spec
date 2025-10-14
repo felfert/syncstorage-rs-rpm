@@ -44,6 +44,7 @@ Patch2:         syncstorage-rs-updatenodes.patch
 %patch 0 -p1 -b .nosentry
 %patch 1 -p1 -b .populatedb
 %patch 2 -p1 -b .updatenodes
+cp %{SOURCE1} .
 
 %build
 cargo install --path ./syncserver --no-default-features --features=syncstorage-db/mysql --locked
