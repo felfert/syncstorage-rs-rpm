@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -13,7 +13,12 @@ BuildRequires:  llvm-devel
 BuildRequires:  clang-devel
 BuildRequires:  mariadb-devel
 
+# Default DB
 Suggests:       mariadb-server
+# Used to generate passwords in setup instructions
+Suggests:       openssl
+# Used as reverse proxy in setup instructions
+Suggests:       httpd
 
 %global forgeurl        https://github.com/mozilla-services/syncstorage-rs
 %global tag             %{version}
@@ -145,5 +150,7 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Tweaked default config
 * Mon Oct  6 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Initial packaging
