@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -99,6 +99,10 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Wed Oct 15 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Allow max loglevel in release build
+- Package release build again
+- Moved config files from here-docs in spec file to sources
 * Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Package debug build for now
 * Tue Oct 14 2025 Fritz Elfert <fritz@fritz-elfert.de>
