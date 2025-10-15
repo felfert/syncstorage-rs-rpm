@@ -1,0 +1,13 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 2f2b3b0..a47d7d8 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -78,7 +78,7 @@ serde_json = { version = "1.0", features = ["arbitrary_precision"] }
+ sha2 = "0.10"
+ slog = { version = "2.5", features = [
+   "max_level_trace",
+-  "release_max_level_info",
++  "release_max_level_trace",
+   "dynamic-keys",
+ ] }
+ slog-async = "2.5"

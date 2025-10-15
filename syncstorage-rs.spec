@@ -47,6 +47,9 @@ Patch2:         syncstorage-rs-updatenodes.patch
 # Fix mariadb compatibility
 Patch3:         syncstorage-rs-mariadb-compat.patch
 
+# Increase max loglevel to trace for release builds
+Patch4:         syncstorage-rs-loglevel.patch
+
 %description
 %{name} is Mozilla's new firefox sync server written in Rust.
 
@@ -56,13 +59,14 @@ Patch3:         syncstorage-rs-mariadb-compat.patch
 %patch 1 -p1 -b .populatedb
 %patch 2 -p1 -b .updatenodes
 %patch 3 -p1 -b .mariadb
+%patch 4 -p1 -b .loglevel
 cp %{SOURCE1} .
 
 %build
-cargo install --debug --path ./syncserver --no-default-features --features=syncstorage-db/mysql --locked
+cargo install --path ./syncserver --no-default-features --features=syncstorage-db/mysql --locked
 
 %install
-%{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/debug/syncserver
+%{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/release/syncserver
 %{__install} -D -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE2}
 %{__install} -D -m 0640 -t %{buildroot}%{_sysconfdir}/syncserver %{SOURCE3}
 %{__install} -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/sysconfig/syncserver
