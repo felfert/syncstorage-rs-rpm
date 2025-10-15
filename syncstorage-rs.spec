@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        7%{?dist}
+Release:        9%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -47,8 +47,9 @@ Patch2:         syncstorage-rs-updatenodes.patch
 # Fix mariadb compatibility
 Patch3:         syncstorage-rs-mariadb-compat.patch
 
-# Increase max loglevel to trace for release builds
-Patch4:         syncstorage-rs-loglevel.patch
+# Increase max loglevel to trace for release builds and use native
+# journal logger to retain structured log records if running under systemd
+Patch4:         syncstorage-rs-logging.patch
 
 %description
 %{name} is Mozilla's new firefox sync server written in Rust.
@@ -59,11 +60,11 @@ Patch4:         syncstorage-rs-loglevel.patch
 %patch 1 -p1 -b .populatedb
 %patch 2 -p1 -b .updatenodes
 %patch 3 -p1 -b .mariadb
-%patch 4 -p1 -b .loglevel
+%patch 4 -p1 -b .logging
 cp %{SOURCE1} .
 
 %build
-cargo install --path ./syncserver --no-default-features --features=syncstorage-db/mysql --locked
+cargo install --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
 
 %install
 %{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/release/syncserver
@@ -99,6 +100,8 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Wed Oct 15 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Use native journal, if running under systemd
 * Wed Oct 15 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Allow max loglevel in release build
 - Package release build again
