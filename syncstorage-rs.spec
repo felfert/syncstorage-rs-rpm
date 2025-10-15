@@ -30,6 +30,9 @@ Source0:        %{forgesource0}
 URL:            %{forgeurl0}
 
 Source1:        README-FEDORA.md
+Source2:        syncserver.service
+Source3:        syncserver.toml
+Source4:        syncserver.env
 
 # Remove callbacks to Sentry API in order to disable sending metrics to mozilla foundation.
 # See: https://www.kyzer.me.uk/syncserver/#Code_patch:_remove_the_callbacks_to_Sentry_API
@@ -57,74 +60,12 @@ cp %{SOURCE1} .
 
 %build
 cargo install --debug --path ./syncserver --no-default-features --features=syncstorage-db/mysql --locked
-cat > syncserver.service << EOF
-[Unit]
-Description=Mozilla Firefox Sync
-Wants=mariadb.service
-After=network.target mariadb.service
-
-[Service]
-Type=simple
-User=%{saccount}
-EnvironmentFile=-/etc/sysconfig/syncserver
-ExecStart=/usr/libexec/syncserver --config /etc/syncserver/syncserver.toml
-
-[Install]
-WantedBy=multi-user.target
-EOF
-cat > syncserver.toml << EOF
-master_secret = "CHANGE_ME!!!"
-
-host = "localhost" # default
-port = 8000        # default
-
-# removing this line will default to moz_json formatted logs (which is preferred for production envs)
-human_logs = 1
-
-# MySQL DSN:
-syncstorage.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync"
-
-# disable quota limits
-syncstorage.enable_quota = 0
-# set the quota limit to 2GB.
-# max_quota_limit = 200000000
-syncstorage.enabled = true
-syncstorage.limits.max_total_records = 1666 # See issues #298/#333
-
-# MySQL DSN (same as above, as table names are distinct
-tokenserver.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync"
-
-tokenserver.enabled = true
-tokenserver.run_migrations = true
-tokenserver.fxa_email_domain = "api.accounts.firefox.com"
-tokenserver.fxa_oauth_server_url = "https://oauth.accounts.firefox.com"
-tokenserver.fxa_browserid_audience = "https://token.services.mozilla.comn"
-tokenserver.fxa_browserid_issuer = "https://api.accounts.firefox.com"
-tokenserver.fxa_browserid_server_url = "https://verifier.accounts.firefox.com"
-
-# cors settings
-# cors_allowed_origin = "localhost"
-# cors_max_age = 86400
-EOF
-
-cat > syncserver.env << EOF
-# Define environment variables for syncserver here
-
-# Global log level
-RUST_LOG=info
-
-# The public URL to set in the node record of the nodes table
-PUBLIC_URL=https://publicurl.tld
-
-# The maximum number of sync client users for that node
-MAX_CLIENTS=1
-EOF
 
 %install
 %{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/debug/syncserver
-%{__install} -D -m 0644 -t %{buildroot}%{_unitdir} syncserver.service
-%{__install} -D -m 0640 -t %{buildroot}%{_sysconfdir}/syncserver syncserver.toml
-%{__install} -D -m 0644 syncserver.env %{buildroot}%{_sysconfdir}/sysconfig/syncserver
+%{__install} -D -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE2}
+%{__install} -D -m 0640 -t %{buildroot}%{_sysconfdir}/syncserver %{SOURCE3}
+%{__install} -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/sysconfig/syncserver
 
 %clean
 rm -rf %{buildroot}

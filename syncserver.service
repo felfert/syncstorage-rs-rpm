@@ -1,0 +1,13 @@
+[Unit]
+Description=Mozilla Firefox Sync
+Wants=mariadb.service
+After=network.target mariadb.service
+
+[Service]
+Type=simple
+User=ffsync
+EnvironmentFile=-/etc/sysconfig/syncserver
+ExecStart=/usr/libexec/syncserver --config /etc/syncserver/syncserver.toml
+
+[Install]
+WantedBy=multi-user.target
