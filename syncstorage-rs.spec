@@ -1,14 +1,20 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %{?systemd_requires}
 
-BuildRequires:  rust-packaging
+%global validrust 0%{?fedora}
+
 BuildRequires:  systemd-rpm-macros
+%if %{validrust}
+BuildRequires:  rust-packaging
+%else
+BuildRequires:  curl
+%endif
 BuildRequires:  llvm-devel
 BuildRequires:  clang-devel
 BuildRequires:  mariadb-devel
@@ -24,7 +30,7 @@ Suggests:       httpd
 %global tag             %{version}
 %global saccount        ffsync
 
-%forgemeta -a -i
+%forgemeta -a
 
 Source0:        %{forgesource0}
 URL:            %{forgeurl0}
@@ -64,7 +70,15 @@ Patch4:         syncstorage-rs-logging.patch
 cp %{SOURCE1} .
 
 %build
+%if %{validrust}
 cargo install --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
+%else
+# Fetch, install and use current rustup
+CDIR="$(pwd)/tmpcargo"
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | HOME=${CDIR} sh -s -- -y --no-modify-path
+export PATH="${CDIR}/.cargo/bin:$PATH"
+HOME=${CDIR} cargo install --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
+%endif
 
 %install
 %{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/release/syncserver
@@ -100,6 +114,8 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Support build on distros that dont have a recent rust by using rustup
 * Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Fixed local socket syntax
 * Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
