@@ -7,7 +7,7 @@ port = 8000        # default
 human_logs = 1
 
 # MySQL DSN:
-syncstorage.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync"
+syncstorage.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync?socket=%2Fvar%2Flib%2Fmysql%2Fmysql.sock"
 
 # disable quota limits
 syncstorage.enable_quota = 0
@@ -17,7 +17,7 @@ syncstorage.enabled = true
 syncstorage.limits.max_total_records = 1666 # See issues #298/#333
 
 # MySQL DSN (same as above, as table names are distinct
-tokenserver.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync"
+tokenserver.database_url = "mysql://ffsync:**topsecret**@localhost/ffsync?socket=%2Fvar%2Flib%2Fmysql%2Fmysql.sock"
 
 tokenserver.enabled = true
 tokenserver.run_migrations = true

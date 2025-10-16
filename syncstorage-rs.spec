@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -100,6 +100,8 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Fixed local socket syntax
 * Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Improve mariadb compatibility
 * Wed Oct 15 2025 Fritz Elfert <fritz@fritz-elfert.de>
