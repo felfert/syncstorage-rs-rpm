@@ -38,7 +38,46 @@ EOF
 ### 4. Setup reverse proxy (apache virtual host)
 
  Here is an example config that goes into /etc/httpd/conf.d/ffsync.conf:
+```
+<VirtualHost *:443>
+    ServerAdmin me@mydomain.tld
+    ServerName sync.mydomain.tld
+    DocumentRoot /var/www/html/empty
+    ErrorLog logs/ffsync.mydomain.tld-error_log
+    CustomLog logs/ffsync.mydomain.tld-access_log combined
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/ffsync.mydomain.tld/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/ffsync.mydomain.tld/privkey.pem
 
+    ProxyPreserveHost on
+    <Location />
+        ProxyPass http://127.0.0.1:8000/
+        RequestHeader set X-Forwarded-Proto "https"
+    </Location>
+
+</VirtualHost>
 ```
-TBD
-```
+The SSL setup using letsencrypt is beyond the scope of this document.
+Just note, that the generic parts of the SSL configuration are in `/etc/httpd/conf.d/ssl.conf` which is automatically effective for all virtualhosts on the local machine.
+Regarding letsencrypt: On the current target distibutions of this package (Fedora and RHEL), there is
+a package named certbot available. I suggest you, consult the docs of that package. You can search for that package [here](https://pkgs.org/search/?q=certbot).
+
+### 5 Setup FireFox to use your new syncserver
+
+#### FireFox for Desktop
+
+- Sign out of your FireFox account
+- Enter `about:config` into the URL bar
+- Set the preference `identity.sync.tokenserver.uri` to the value `https://ffsync.mydomain.tld/1.0/sync/1.5`
+- Sign in to your FireFox account. It should immediately sync (perhaps a little longer than usual, because it has to push all data)
+
+#### FireFox for Mobile
+
+- Go to `Settings` → `About Firefox`
+- Tap on the FireFox Browser logo 5 times
+- Go back and scroll up to Sync Debug, click it
+- Set Custom Sync Server to https://ffsync.mydomain.tld/1.0/sync/1.5
+- Stop and restart the FireFox app
+- On a desktop computer running FireFox (signed in), go to https://firefox.com/pair and follow the steps until you're shown a QR code
+- On the mobile, go to `Settings` → `Synchronize` → `Ready to scan` and scan the QR code on the desktop computer
+- Alternatively, if you don't have a desktop computer, go to `Settings` → `Synchronize` → `Use email` instead
