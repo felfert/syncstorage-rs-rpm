@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -100,6 +100,8 @@ exit 0
 %doc README-FEDORA.md
 
 %changelog
+* Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Improve mariadb compatibility
 * Wed Oct 15 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Use native journal, if running under systemd
 * Wed Oct 15 2025 Fritz Elfert <fritz@fritz-elfert.de>
