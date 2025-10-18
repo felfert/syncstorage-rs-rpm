@@ -1,0 +1,6 @@
+syncstorage-rs-nosentry.patch
+syncstorage-rs-updatenodes.patch
+syncstorage-rs-mariadb-compat.patch
+syncstorage-rs-logging.patch
+syncstorage-rs-allow-trace.patch
+debian-makefile.patch

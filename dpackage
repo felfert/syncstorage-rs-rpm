@@ -1,0 +1,20 @@
+#!/bin/bash
+
+TARGET=noble
+UPSTREAM_VERSION=$(dpkg-parsechangelog -l debian/changelog.in -S Version | sed -e 's/-.*//')
+SRCNAME=$(dpkg-parsechangelog -l debian/changelog.in -S Source)
+ORIG="${SRCNAME}_${UPSTREAM_VERSION}.orig"
+SRCDIR="${SRCNAME}-${UPSTREAM_VERSION}"
+curl -L https://github.com/mozilla-services/syncstorage-rs/archive/refs/tags/${UPSTREAM_VERSION}.tar.gz -o ${ORIG}.tar.gz
+rm -rf ${SRCDIR}
+tar xzf ${ORIG}.tar.gz
+cp -a debian ${SRCDIR}/
+cp -a *.patch ${SRCDIR}/debian/patches
+cp syncserver.env syncserver.toml ${SRCDIR}/debian/
+cp README-FEDORA.md ${SRCDIR}/debian/README.md
+sed -e 's/sysconfig/default/' < syncserver.service > ${SRCDIR}/debian/syncserver.service
+sed -e "s/+TARGET+/${TARGET}/" < debian/changelog.in > ${SRCDIR}/debian/changelog
+rm -f ${SRCDIR}/debian/changelog.in
+(cd ${SRCDIR} && dpkg-buildpackage -S)
+(cd ${SRCDIR} && dpkg-buildpackage -b)
+rm -rf ${SRCDIR}

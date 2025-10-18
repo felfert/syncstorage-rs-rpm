@@ -1,0 +1,6 @@
+syncstorage-rs (0.21.1-1+TARGET+) unstable; urgency=low
+
+  * initial packaging
+
+ -- Fritz Elfert <fritz@fritz-elfert.de>  Sat, 18 Oct 2025 20:31:00 -0200
+

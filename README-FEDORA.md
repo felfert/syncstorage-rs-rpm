@@ -27,7 +27,7 @@ EOF
 
 ### 3. Customize /etc/sysconfig/syncserver
 
-- Edit `/etc/sysconfig/syncserver`
+- Edit `/etc/sysconfig/syncserver` (`/etc/default/syncserver` on debian based distros)
 
   In this file, the environment variables used by the syncserver are specified.
 

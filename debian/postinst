@@ -1,0 +1,14 @@
+#! /bin/sh
+
+set -e
+
+if [ "$1" = "configure" ] ; then
+	SACCOUNT=ffsync
+	getent group ${SACCOUNT} >/dev/null || groupadd -r ${SACCOUNT}
+	getent passwd ${SACCOUNT} >/dev/null || \
+    	useradd -r -g ${SACCOUNT} -d /etc/syncserver \
+		-s /sbin/nologin -c "Mozilla Syncserver" ${SACCOUNT}
+	chown root:${SACCOUNT} /etc/syncserver/syncserver.toml
+fi
+#DEBHELPER#
+
