@@ -56,7 +56,13 @@ jobs:
           (cd ${SRCDIR} && dpkg-buildpackage -S)
           (cd ${SRCDIR} && dpkg-buildpackage -b)
           rm -rf ${SRCDIR}
-        
+      - name: Save artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: syncstorage-rs
+          path: |
+            *_*
+
 #  deploy:
 #    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
 #    needs: [build, check-cargo-lock]
