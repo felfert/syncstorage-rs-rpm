@@ -11,7 +11,6 @@ on:
 env:
   CARGO_TERM_COLOR: always
   DEBIAN_FRONTEND: noninteractive
-  INSTDEPS: "apt-get update && apt-get install -y libclang-dev clang"
   CACHE_PREFIX: "${{ vars.CACHE_PREFIX }}"
 
 jobs:
@@ -38,8 +37,9 @@ jobs:
           SRCNAME=$(dpkg-parsechangelog -l debian/changelog.in -S Source)
           ORIG="${SRCNAME}_${UPSTREAM_VERSION}.orig"
           SRCDIR="${SRCNAME}-${UPSTREAM_VERSION}"
+          sudo apt-get install -y devscripts equivs
           mk-build-deps --build-dep debian/control
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ./*.deb
+          sudo apt-get install -y ./*.deb
           rm -f *_*
           curl -L https://github.com/mozilla-services/syncstorage-rs/archive/refs/tags/${UPSTREAM_VERSION}.tar.gz -o ${ORIG}.tar.gz
           rm -rf ${SRCDIR}
