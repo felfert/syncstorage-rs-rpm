@@ -52,11 +52,11 @@ jobs:
           (cd ${SRCDIR} && dpkg-buildpackage -b)
           rm -rf ${SRCDIR}
         
-  deploy:
-    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
-    needs: [build, check-cargo-lock]
-    name: Call
-    uses: ./.github/workflows/cd.yml
-    secrets: inherit
-    with:
-      artifact-id: syncstorage-rs
+#  deploy:
+#    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+#    needs: [build, check-cargo-lock]
+#    name: Call
+#    uses: ./.github/workflows/cd.yml
+#    secrets: inherit
+#    with:
+#      artifact-id: syncstorage-rs
