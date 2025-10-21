@@ -38,6 +38,9 @@ jobs:
           SRCNAME=$(dpkg-parsechangelog -l debian/changelog.in -S Source)
           ORIG="${SRCNAME}_${UPSTREAM_VERSION}.orig"
           SRCDIR="${SRCNAME}-${UPSTREAM_VERSION}"
+          mk-build-deps --build-dep debian/control
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ./*.deb
+          rm -f *_*
           curl -L https://github.com/mozilla-services/syncstorage-rs/archive/refs/tags/${UPSTREAM_VERSION}.tar.gz -o ${ORIG}.tar.gz
           rm -rf ${SRCDIR}
           tar xzf ${ORIG}.tar.gz
