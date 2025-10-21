@@ -30,6 +30,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Setup build environment
+        run: |
+          sudo apt-get install -y devscripts equivs
+          mk-build-deps --build-dep debian/control
+          sudo apt-get install -y ./*.deb
+          rm -f *_*
       - name: Build package
         run: |
           TARGET=noble
@@ -37,10 +43,6 @@ jobs:
           SRCNAME=$(dpkg-parsechangelog -l debian/changelog.in -S Source)
           ORIG="${SRCNAME}_${UPSTREAM_VERSION}.orig"
           SRCDIR="${SRCNAME}-${UPSTREAM_VERSION}"
-          sudo apt-get install -y devscripts equivs
-          mk-build-deps --build-dep debian/control
-          sudo apt-get install -y ./*.deb
-          rm -f *_*
           curl -L https://github.com/mozilla-services/syncstorage-rs/archive/refs/tags/${UPSTREAM_VERSION}.tar.gz -o ${ORIG}.tar.gz
           rm -rf ${SRCDIR}
           tar xzf ${ORIG}.tar.gz
