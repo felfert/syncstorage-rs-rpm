@@ -57,7 +57,7 @@ jobs:
           (cd ${SRCDIR} && dpkg-buildpackage -b)
           rm -rf ${SRCDIR}
       - name: Save artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: syncstorage-rs
           path: |
