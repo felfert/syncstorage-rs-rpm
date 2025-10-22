@@ -11,7 +11,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   DEBIAN_FRONTEND: noninteractive
-  CACHE_PREFIX: "${{ vars.CACHE_PREFIX }}"
+  PPA_SIGNING_PASS: ${{ secrets.PPA_SIGNING_PASS }}
 
 jobs:
   check-cargo-lock:
@@ -36,6 +36,9 @@ jobs:
           mk-build-deps --build-dep debian/control
           sudo apt-get install -y ./*.deb
           rm -f *_*
+      - name: Setup GPG
+        run: |
+          echo "${{ secrets.PPA_SIGNING_KEY }}" | gpg --batch --import --yes
       - name: Build package
         run: |
           TARGET=noble
@@ -53,8 +56,12 @@ jobs:
           sed -e 's/sysconfig/default/' < syncserver.service > ${SRCDIR}/debian/syncserver.service
           sed -e "s/+TARGET+/${TARGET}/" < debian/changelog.in > ${SRCDIR}/debian/changelog
           rm -f ${SRCDIR}/debian/changelog.in
-          (cd ${SRCDIR} && dpkg-buildpackage -S)
-          (cd ${SRCDIR} && dpkg-buildpackage -b)
+          echo -e "#!/bin/bash\ngpg --batch --pinentry-mode loopback --passphrase \"${{ secrets.PPA_SIGNING_PASS }}\" \"\$@\"" > ppasign
+          chmod a+x ppasign
+          PPASIGN="$(pwd)/ppasign"
+          KID="$(gpg -k | grep "^ " | tr -d " ")"
+          (cd ${SRCDIR} && dpkg-buildpackage -S -k"${KID}" -p"${PPASIGN}")
+          (cd ${SRCDIR} && dpkg-buildpackage -b -k"${KID}" -p"${PPASIGN}")
           rm -rf ${SRCDIR}
       - name: Save artifacts
         uses: actions/upload-artifact@v4
