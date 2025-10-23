@@ -76,7 +76,7 @@ jobs:
           path: |
             *_*
 
-deploy:
+  deploy:
     if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
     needs: [build, check-cargo-lock]
     name: Call
