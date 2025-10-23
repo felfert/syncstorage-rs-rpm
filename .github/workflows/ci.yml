@@ -47,7 +47,7 @@ jobs:
           cp syncserver.env syncserver.toml ${SRCDIR}/debian/
           cp README-FEDORA.md ${SRCDIR}/debian/README.md
           sed -e 's/sysconfig/default/' < syncserver.service > ${SRCDIR}/debian/syncserver.service
-          sed -e "s/+TARGET+/${TARGET}/" < debian/changelog.in > ${SRCDIR}/debian/changelog
+          sed -e "s/+TARGET+/${TARGET}/g" < debian/changelog.in > ${SRCDIR}/debian/changelog
           rm -f ${SRCDIR}/debian/changelog.in
           echo -e "#!/bin/bash\ngpg --batch --pinentry-mode loopback --passphrase \"${{ secrets.PPA_SIGNING_PASS }}\" \"\$@\"" > ppasign
           chmod a+x ppasign
