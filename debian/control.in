@@ -3,7 +3,7 @@ Maintainer: Fritz Elfert <fritz@fritz-elfert.de>
 Section: misc
 Priority: optional
 Standards-Version: 4.7.0
-Build-Depends: debhelper-compat (= 13), build-essential, rustup, libmariadb-dev-compat, llvm-18, clang-18, pkg-config
+Build-Depends: debhelper-compat (= 13), build-essential, rust+RUSTVER+-all, libmariadb-dev-compat, llvm-18, clang-18, pkg-config
 
 Package: syncstorage-rs
 Architecture: amd64

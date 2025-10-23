@@ -12,6 +12,7 @@ env:
   CARGO_TERM_COLOR: always
   DEBIAN_FRONTEND: noninteractive
   PPA_SIGNING_PASS: ${{ secrets.PPA_SIGNING_PASS }}
+  RUSTVER: -1.85
 
 jobs:
   build:
@@ -26,14 +27,20 @@ jobs:
       - name: Setup build environment
         run: |
           sudo apt-get install -y devscripts equivs
+          sed -e "s/+RUSTVER+/${RUSTVER}/g" < debian/control.in > debian/control
+          rm -f debian/control.in
+          sed -e "s/+RUSTVER+/${RUSTVER}/g" < debian/rules.in > debian/rules
+          chmod a+x debian/rules && rm -f debian/rules.in
           mk-build-deps --build-dep debian/control
           sudo apt-get install -y ./*.deb
           rm -f *_*
+
       - name: Setup GPG
         run: |
           echo "${{ secrets.PPA_SIGNING_KEY }}" | gpg --batch --import --yes
       - name: Build package
         run: |
+          export PATH="/usr/lib/rust-1.85/bin:$PATH"
           TARGET=noble
           UPSTREAM_VERSION=$(dpkg-parsechangelog -l debian/changelog.in -S Version | sed -e 's/-.*//')
           SRCNAME=$(dpkg-parsechangelog -l debian/changelog.in -S Source)
@@ -42,19 +49,41 @@ jobs:
           curl -L https://github.com/mozilla-services/syncstorage-rs/archive/refs/tags/${UPSTREAM_VERSION}.tar.gz -o ${ORIG}.tar.gz
           rm -rf ${SRCDIR}
           tar xzf ${ORIG}.tar.gz
+          # Generate  syncstorage-rs-vendor.patch and  ${ORIG}-vendor.tar.gz
+          cp -a ${SRCDIR} a
+          cd a
+          cat ../debian/patches/series | while read p ; do
+            if [ -f ../$p ] ; then
+              echo "Applying patch $p ..."
+              patch -p1 < ../$p
+            fi
+          done
+          cd ..
+          cp -a a b
+          cd b
+          cargo vendor -q
+          mkdir -p .cargo
+          cp ../config.toml.vendor  .cargo/config.toml
+          cd ..
+          tar czCf b ${ORIG}-vendor.tar.gz vendor && rm -rf b/vendor
+          diff -urwN a b > syncstorage-rs-vendor.patch && rm -rf a b
+          ls -lh syncstorage-rs-vendor.patch
+          tar xzCf ${SRCDIR} ${ORIG}-vendor.tar.gz
+          # Prepare and build debian source package
           cp -a debian ${SRCDIR}/
           cp -a *.patch ${SRCDIR}/debian/patches
           cp syncserver.env syncserver.toml ${SRCDIR}/debian/
           cp README-FEDORA.md ${SRCDIR}/debian/README.md
           sed -e 's/sysconfig/default/' < syncserver.service > ${SRCDIR}/debian/syncserver.service
-          sed -e "s/+TARGET+/${TARGET}/" < debian/changelog.in > ${SRCDIR}/debian/changelog
+          sed -e "s/+TARGET+/${TARGET}/g" < debian/changelog.in > ${SRCDIR}/debian/changelog
           rm -f ${SRCDIR}/debian/changelog.in
           echo -e "#!/bin/bash\ngpg --batch --pinentry-mode loopback --passphrase \"${{ secrets.PPA_SIGNING_PASS }}\" \"\$@\"" > ppasign
           chmod a+x ppasign
           PPASIGN="$(pwd)/ppasign"
           KID="$(gpg -k | grep "^ " | tr -d " ")"
           (cd ${SRCDIR} && dpkg-buildpackage -S -k"${KID}" -p"${PPASIGN}")
-          (cd ${SRCDIR} && dpkg-buildpackage -b -k"${KID}" -p"${PPASIGN}")
+          # Build debian binary package
+          # (cd ${SRCDIR} && dpkg-buildpackage -b -k"${KID}" -p"${PPASIGN}")
           rm -rf ${SRCDIR}
       - name: Save artifacts
         uses: actions/upload-artifact@v4

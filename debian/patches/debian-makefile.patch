@@ -1,6 +1,6 @@
 --- syncstorage-rs-0.21.1/Makefile.orig	2025-09-23 20:12:34.000000000 +0000
 +++ syncstorage-rs-0.21.1/Makefile	2025-10-19 22:19:54.987209585 +0000
-@@ -1,198 +1,15 @@
+@@ -1,198 +1,10 @@
 -##
 -# Collection of helper scripts used for local dev.
 -##
@@ -199,8 +199,8 @@
 -.PHONY: ruff-format
 -ruff-format: $(INSTALL_STAMP)  ##  Formats files in directory.
 -	$(POETRY) run ruff format $(TOOLS_DIR)
-+target/release/syncserver: defaultcargo
-+	cargo install --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
++target/release/syncserver:
++	cargo${RUSTVER} install --frozen --path ./syncserver --no-default-features --features=syncstorage-db/mysql
 +
 +install: target/release/syncserver
 +	install -D -m 0755 target/release/syncserver $(DESTDIR)/usr/libexec/syncserver
@@ -208,9 +208,4 @@
 +	install -D -m 0640 debian/syncserver.toml $(DESTDIR)/etc/syncserver/syncserver.toml
 +
 +clean:
-+	type -P cargo > /dev/null && cargo clean || rm -rf target
-+	rm -f defaultcargo
-+
-+defaultcargo:
-+	rustup default stable
-+	touch $@
++	type -P cargo${RUSTVER} > /dev/null && cargo${RUSTVER} clean || rm -rf target

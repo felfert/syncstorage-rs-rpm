@@ -1,7 +1,12 @@
 #!/usr/bin/make -f
 
+RUSTVER = +RUSTVER+
+
 %:
 	dh $@
+
+override_dh_auto_build:
+	dh_auto_build -- RUSTVER=$(RUSTVER)
 
 override_dh_installsystemd:
 	dh_installsystemd --name=syncserver syncserver.service --no-enable --no-start
