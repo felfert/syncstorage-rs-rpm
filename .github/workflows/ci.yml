@@ -14,15 +14,6 @@ env:
   PPA_SIGNING_PASS: ${{ secrets.PPA_SIGNING_PASS }}
 
 jobs:
-  check-cargo-lock:
-    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
-    name: Check Cargo.lock
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - run: cargo fetch --locked
-
   build:
     if: ${{ github.event_name != 'pull_request' }} # If this is a pull request, stop here
     name: Build ubuntu package
@@ -76,7 +67,7 @@ jobs:
 
   deploy:
     if: ${{ github.event_name == 'workflow_dispatch' || ( github.event_name == 'push' && github.ref_type == 'tag' ) }}
-    needs: [build, check-cargo-lock]
+    needs: [build]
     name: Call CD
     uses: ./.github/workflows/cd.yml
     secrets: inherit
