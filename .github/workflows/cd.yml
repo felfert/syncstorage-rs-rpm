@@ -3,12 +3,12 @@ name: Publish
 on:
   workflow_call:
     inputs:
-      artifact-id:
+      artifact-name:
         required: true
         type: string
   workflow_dispatch:
     inputs:
-      artifact-id:
+      artifact-name:
         required: true
         type: string
  
@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Fetch artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
-        name: ${{ inputs.artifact-id }}
+        name: ${{ inputs.artifact-name }}
     - name: Install dput
       run: DEBIAN_FRONTEND=noninteractive apt-get install -y dput
     - name: Publish to PPA

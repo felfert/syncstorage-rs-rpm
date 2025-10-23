@@ -26,10 +26,14 @@ jobs:
   build:
     if: ${{ github.event_name != 'pull_request' }} # If this is a pull request, stop here
     name: Build ubuntu package
+    outputs:
+      artifact-id: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Show github event_name
+        run: echo "github.event_name=\"${{ github.event_name }}\""
       - name: Setup build environment
         run: |
           sudo apt-get install -y devscripts equivs
@@ -68,14 +72,15 @@ jobs:
         with:
           name: syncstorage-rs
           retention-days: 1
+          if-no-files-found: error
           path: |
             *_*
 
-#  deploy:
-#    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
-#    needs: [build, check-cargo-lock]
-#    name: Call
-#    uses: ./.github/workflows/cd.yml
-#    secrets: inherit
-#    with:
-#      artifact-id: syncstorage-rs
+deploy:
+    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+    needs: [build, check-cargo-lock]
+    name: Call
+    uses: ./.github/workflows/cd.yml
+    secrets: inherit
+    with:
+      artifact-name: syncstorage-rs
