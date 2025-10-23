@@ -12,6 +12,9 @@ on:
         required: true
         type: string
  
+env:
+  DEBIAN_FRONTEND: noninteractive
+
 jobs:
   publish-ppa:
     name: Publish to LaunchPad PPA
@@ -22,6 +25,6 @@ jobs:
       with:
         name: ${{ inputs.artifact-name }}
     - name: Install dput
-      run: DEBIAN_FRONTEND=noninteractive apt-get install -y dput
+      run: sudo apt-get install -y dput
     - name: Publish to PPA
       run: dput ppa:felfert/syncstorage-rs *_source.changes
