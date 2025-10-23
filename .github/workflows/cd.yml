@@ -1,0 +1,21 @@
+name: Publish
+
+on:
+  workflow_call:
+    inputs:
+      artifact-id:
+        required: true
+        type: string
+  workflow_dispatch:
+ 
+jobs:
+  publish-ppa:
+    name: Publish to LaunchPad PPA
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fetch artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-id }}
+    - name: Publish to PPA
+      run: dput ppa:felfert/syncstorage-rs *_source.changes
