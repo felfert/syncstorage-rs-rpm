@@ -27,4 +27,4 @@ jobs:
     - name: Install dput
       run: sudo apt-get install -y dput
     - name: Publish to PPA
-      run: dput ppa:felfert/syncstorage-rs *_source.changes
+      run: dput -u ppa:felfert/syncstorage-rs *_source.changes
