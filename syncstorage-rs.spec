@@ -115,7 +115,7 @@ exit 0
 %{_unitdir}/*
 %config(noreplace) %{_sysconfdir}/sysconfig/syncserver
 %attr(0640,root,%{saccount}) %config(noreplace) %{_sysconfdir}/syncserver/*
-%doc README-FEDORA.md
+%doc README-POSTINSTALL.md
 
 %changelog
 * Fri Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
