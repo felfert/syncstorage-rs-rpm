@@ -23,7 +23,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get version from tag
+        id: git-describe-semver
+        uses: choffmeister/git-describe-semver@main
+        with:
+          version: latest
+          fallback: 0.0.0
+      - name: Print version
+        run: echo Version ${{ steps.git-describe-semver.outputs.version }}
       - name: Setup build environment
         run: |
           sudo apt-get install -y devscripts equivs
@@ -73,7 +83,7 @@ jobs:
           cp -a debian ${SRCDIR}/
           cp -a *.patch ${SRCDIR}/debian/patches
           cp syncserver.env syncserver.toml ${SRCDIR}/debian/
-          cp README-FEDORA.md ${SRCDIR}/debian/README.md
+          cp README-POSTINSTALL.md ${SRCDIR}/debian/README.md
           sed -e 's/sysconfig/default/' < syncserver.service > ${SRCDIR}/debian/syncserver.service
           sed -e "s/+TARGET+/${TARGET}/g" < debian/changelog.in > ${SRCDIR}/debian/changelog
           rm -f ${SRCDIR}/debian/changelog.in
@@ -83,7 +93,7 @@ jobs:
           KID="$(gpg -k | grep "^ " | tr -d " ")"
           (cd ${SRCDIR} && dpkg-buildpackage -S -k"${KID}" -p"${PPASIGN}")
           # Build debian binary package
-          # (cd ${SRCDIR} && dpkg-buildpackage -b -k"${KID}" -p"${PPASIGN}")
+          (cd ${SRCDIR} && dpkg-buildpackage -b -k"${KID}" -p"${PPASIGN}")
           rm -rf ${SRCDIR}
       - name: Save artifacts
         uses: actions/upload-artifact@v4
@@ -95,7 +105,7 @@ jobs:
             *_*
 
   deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' || ( github.event_name == 'push' && github.ref_type == 'tag' ) }}
+    if: ${{ github.event_name == 'Xworkflow_dispatch' || ( github.event_name == 'Xpush' && github.ref_type == 'tag' ) }}
     needs: [build]
     name: Call CD
     uses: ./.github/workflows/cd.yml
