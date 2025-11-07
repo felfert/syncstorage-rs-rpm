@@ -35,7 +35,7 @@ Suggests:       httpd
 Source0:        %{forgesource0}
 URL:            %{forgeurl0}
 
-Source1:        README-FEDORA.md
+Source1:        README-POSTINSTALL.md
 Source2:        syncserver.service
 Source3:        syncserver.toml
 Source4:        syncserver.env

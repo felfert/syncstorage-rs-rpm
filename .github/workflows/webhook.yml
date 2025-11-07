@@ -1,0 +1,14 @@
+name: Webhook
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  copr:
+    name: Trigger build on COPR
+    runs-on: ubuntu-slim
+    steps:
+      - uses: felfert/copr-build-action@v1
+        with:
+          url: ${{ secrets.COPR_WEBHOOK }}
