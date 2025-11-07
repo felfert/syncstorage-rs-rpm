@@ -118,7 +118,7 @@ exit 0
 %doc README-POSTINSTALL.md
 
 %changelog
-* Fri Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
+* Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Split up logging patch by functionality
 * Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Support build on distros that dont have a recent rust by using rustup
