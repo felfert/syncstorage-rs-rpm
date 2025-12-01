@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -118,6 +118,8 @@ exit 0
 %doc README-POSTINSTALL.md
 
 %changelog
+* Tue Dec  2 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Get rid of rustix by using std::os::linux::fs::MetadataExt
 * Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Split up logging patch by functionality
 * Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>
