@@ -1,17 +1,19 @@
 diff --git a/syncserver/Cargo.toml b/syncserver/Cargo.toml
-index 1593901..99e7cef 100644
+index 1593901..684abde 100644
 --- a/syncserver/Cargo.toml
 +++ b/syncserver/Cargo.toml
-@@ -56,6 +56,7 @@ urlencoding = "2.1"
- validator = "0.20"
+@@ -57,6 +57,9 @@ validator = "0.20"
  validator_derive = "0.20"
  woothee = "0.13"
-+slog-journald = "2.2.0"
  
++[target.'cfg(target_os = "linux")'.dependencies]
++slog-journald = "2.2.0"
++
  [features]
  default = ["mysql", "py_verifier"]
+ no_auth = []
 diff --git a/syncserver/src/logging.rs b/syncserver/src/logging.rs
-index b182fa6..11153d7 100644
+index b182fa6..d002ac4 100644
 --- a/syncserver/src/logging.rs
 +++ b/syncserver/src/logging.rs
 @@ -1,10 +1,32 @@
@@ -47,7 +49,7 @@ index b182fa6..11153d7 100644
  pub fn init_logging(json: bool) -> ApiResult<()> {
      let logger = if json {
          let hostname = hostname::get()
-@@ -26,10 +48,16 @@ pub fn init_logging(json: bool) -> ApiResult<()> {
+@@ -26,10 +48,19 @@ pub fn init_logging(json: bool) -> ApiResult<()> {
          let drain = slog_async::Async::new(drain).build().fuse();
          slog::Logger::root(drain, slog_o!())
      } else {
@@ -56,7 +58,10 @@ index b182fa6..11153d7 100644
 -        let drain = slog_envlogger::new(drain);
 -        let drain = slog_async::Async::new(drain).build().fuse();
 +        let drain = if connected_to_journal() {
++            #[cfg(target_os = "linux")]
 +            let drain = slog_journald::JournaldDrain.fuse();
++            #[cfg(not(target_os = "linux"))]
++            let drain = slog::Discard;
 +            let drain = slog_envlogger::new(drain);
 +            slog_async::Async::new(drain).build().fuse()
 +        } else {
