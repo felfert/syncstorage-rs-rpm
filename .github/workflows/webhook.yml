@@ -1,6 +1,11 @@
 name: Webhook
 
 on:
+  push:
+    branches:
+      'main'
+    paths:
+      'syncstorage-rs.spec'
   workflow_call:
   workflow_dispatch:
 
