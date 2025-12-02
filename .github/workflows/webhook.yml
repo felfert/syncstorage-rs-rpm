@@ -5,7 +5,7 @@ on:
     branches:
       'main'
     paths:
-      'syncstorage-rs.spec'
+      - 'syncstorage-rs.spec'
   workflow_call:
   workflow_dispatch:
 

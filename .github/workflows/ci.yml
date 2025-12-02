@@ -3,9 +3,11 @@ name: CI
 on:
   push:
     branches:
-      'master'
+      - 'main'
+    paths:
+      - 'debian/changelog.in'
     tags:
-      '[0-9]+\.[0-9]+\.[0-9]+'
+      - '[0-9]+\.[0-9]+\.[0-9]+'
   workflow_dispatch:
 
 env:
@@ -15,6 +17,7 @@ env:
   RUSTVER: -1.85
 
 jobs:
+
   build:
     if: ${{ github.event_name != 'pull_request' }} # If this is a pull request, stop here
     name: Build ubuntu package
@@ -56,6 +59,7 @@ jobs:
           SRCNAME=$(dpkg-parsechangelog -l debian/changelog.in -S Source)
           ORIG="${SRCNAME}_${UPSTREAM_VERSION}.orig"
           SRCDIR="${SRCNAME}-${UPSTREAM_VERSION}"
+          VENDOR=vendor$(date +%s)
           curl -L https://github.com/mozilla-services/syncstorage-rs/archive/refs/tags/${UPSTREAM_VERSION}.tar.gz -o ${ORIG}.tar.gz
           rm -rf ${SRCDIR}
           tar xzf ${ORIG}.tar.gz
@@ -71,14 +75,20 @@ jobs:
           cd ..
           cp -a a b
           cd b
-          cargo vendor -q
+          cargo vendor -q ${VENDOR}
           mkdir -p .cargo
-          cp ../config.toml.vendor  .cargo/config.toml
+          cat > .cargo/config.toml << EOF
+          [source.crates-io]
+          replace-with = "vendored-sources"
+          
+          [source.vendored-sources]
+          directory = "${VENDOR}"
+          EOF
           cd ..
-          tar czCf b ${ORIG}-vendor.tar.gz vendor && rm -rf b/vendor
+          tar czCf b ${ORIG}-${VENDOR}.tar.gz ${VENDOR} && rm -rf b/${VENDOR}
           diff -urwN a b > syncstorage-rs-vendor.patch && rm -rf a b
           ls -lh syncstorage-rs-vendor.patch
-          tar xzCf ${SRCDIR} ${ORIG}-vendor.tar.gz
+          tar xzCf ${SRCDIR} ${ORIG}-${VENDOR}.tar.gz
           # Prepare and build debian source package
           cp -a debian ${SRCDIR}/
           cp -a *.patch ${SRCDIR}/debian/patches
@@ -91,7 +101,7 @@ jobs:
           chmod a+x ppasign
           PPASIGN="$(pwd)/ppasign"
           KID="$(gpg -k | grep "^ " | tr -d " ")"
-          (cd ${SRCDIR} && dpkg-buildpackage -S -k"${KID}" -p"${PPASIGN}")
+          (cd ${SRCDIR} && dpkg-buildpackage -S -sa -k"${KID}" -p"${PPASIGN}")
           # Build debian binary package
           (cd ${SRCDIR} && dpkg-buildpackage -b -k"${KID}" -p"${PPASIGN}")
           rm -rf ${SRCDIR}
@@ -105,7 +115,7 @@ jobs:
             *_*
 
   deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' || ( github.event_name == 'push' && github.ref_type == 'tag' ) }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' }}
     needs: [build]
     name: Call CD
     uses: ./.github/workflows/cd.yml
