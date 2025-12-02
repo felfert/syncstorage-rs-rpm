@@ -105,7 +105,7 @@ jobs:
             *_*
 
   deploy:
-    if: ${{ github.event_name == 'Xworkflow_dispatch' || ( github.event_name == 'Xpush' && github.ref_type == 'tag' ) }}
+    if: ${{ github.event_name == 'workflow_dispatch' || ( github.event_name == 'push' && github.ref_type == 'tag' ) }}
     needs: [build]
     name: Call CD
     uses: ./.github/workflows/cd.yml
