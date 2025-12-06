@@ -199,11 +199,11 @@
 -.PHONY: ruff-format
 -ruff-format: $(INSTALL_STAMP)  ##  Formats files in directory.
 -	$(POETRY) run ruff format $(TOOLS_DIR)
-+target/release/syncserver:
-+	cargo${RUSTVER} install --frozen --path ./syncserver --no-default-features --features=syncstorage-db/mysql
++target/debug/syncserver:
++	cargo${RUSTVER} install --debug --frozen --path ./syncserver --no-default-features --features=syncstorage-db/mysql
 +
-+install: target/release/syncserver
-+	install -D -m 0755 target/release/syncserver $(DESTDIR)/usr/libexec/syncserver
++install: target/debug/syncserver
++	install -D -m 0755 target/debug/syncserver $(DESTDIR)/usr/libexec/syncserver
 +	install -D -m 0644 debian/syncserver.env $(DESTDIR)/etc/default/syncserver
 +	install -D -m 0640 debian/syncserver.toml $(DESTDIR)/etc/syncserver/syncserver.toml
 +

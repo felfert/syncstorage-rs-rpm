@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -75,17 +75,17 @@ cp %{SOURCE1} .
 
 %build
 %if %{validrust}
-cargo install --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
+cargo install --debug --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
 %else
 # Fetch, install and use current rustup
 CDIR="$(pwd)/tmpcargo"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | HOME=${CDIR} sh -s -- -y --no-modify-path
 export PATH="${CDIR}/.cargo/bin:$PATH"
-HOME=${CDIR} cargo install --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
+HOME=${CDIR} cargo install --debug --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
 %endif
 
 %install
-%{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/release/syncserver
+%{__install} -D -m 0755 -t %{buildroot}%{_libexecdir} target/debug/syncserver
 %{__install} -D -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE2}
 %{__install} -D -m 0640 -t %{buildroot}%{_sysconfdir}/syncserver %{SOURCE3}
 %{__install} -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/sysconfig/syncserver
@@ -118,6 +118,8 @@ exit 0
 %doc README-POSTINSTALL.md
 
 %changelog
+* Sat Dec  6 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Deliver debug build in order to be able to log SQL queries
 * Tue Dec  2 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Get rid of rustix by using std::os::linux::fs::MetadataExt
 * Thu Oct 16 2025 Fritz Elfert <fritz@fritz-elfert.de>

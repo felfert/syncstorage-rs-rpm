@@ -17,3 +17,4 @@ jobs:
       - uses: felfert/copr-build-action@v1
         with:
           url: ${{ secrets.COPR_WEBHOOK }}
+          force: true
