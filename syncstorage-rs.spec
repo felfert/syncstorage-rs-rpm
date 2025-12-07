@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        18%{?dist}
+Release:        19%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -118,6 +118,8 @@ exit 0
 %doc README-POSTINSTALL.md
 
 %changelog
+* Sun Dec  7 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Fixed openssl rand example in README-POSTINSTALL.md
 * Sun Dec  7 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Suggest alternative dependencies
 * Sat Dec  6 2025 Fritz Elfert <fritz@fritz-elfert.de>

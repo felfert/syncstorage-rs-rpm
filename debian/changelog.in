@@ -1,3 +1,11 @@
+syncstorage-rs (0.21.1-19) +TARGET+; urgency=low
+
+  * Fixed openssl rand example in README-POSTINSTALL.md
+  * Fixed default mysql socket path
+  * Add missing patch
+
+ -- Fritz Elfert <fritz@fritz-elfert.de>  Sun, 07 Dec 2025 17:00:00 -0100
+
 syncstorage-rs (0.21.1-18) +TARGET+; urgency=low
 
   * Install missing doc README-POSTINSTALL.md
