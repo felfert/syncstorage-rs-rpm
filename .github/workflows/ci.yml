@@ -93,7 +93,7 @@ jobs:
           cp -a debian ${SRCDIR}/
           cp -a *.patch ${SRCDIR}/debian/patches
           cp syncserver.env ${SRCDIR}/debian/
-          sed -e 's!socket=.*!socket=%2Frun%2Fmysqld%2Fmysqld.sock!g' < syncserver.toml > ${SRCDIR}/debian/syncserver.toml
+          sed -e 's!socket=.*!socket=%2Frun%2Fmysqld%2Fmysqld.sock"!g' < syncserver.toml > ${SRCDIR}/debian/syncserver.toml
           cp README-POSTINSTALL.md ${SRCDIR}/debian/
           sed -e 's/sysconfig/default/' < syncserver.service > ${SRCDIR}/debian/syncserver.service
           sed -e "s/+TARGET+/${TARGET}/g" < debian/changelog.in > ${SRCDIR}/debian/changelog
