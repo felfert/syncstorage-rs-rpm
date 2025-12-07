@@ -12,4 +12,4 @@ override_dh_installsystemd:
 	dh_installsystemd --name=syncserver syncserver.service --no-enable --no-start
 
 override_dh_installdocs:
-	dh_installdocs README.md
+	dh_installdocs README.md debian/README-POSTINSTALL.md

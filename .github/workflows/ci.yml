@@ -93,7 +93,7 @@ jobs:
           cp -a debian ${SRCDIR}/
           cp -a *.patch ${SRCDIR}/debian/patches
           cp syncserver.env syncserver.toml ${SRCDIR}/debian/
-          cp README-POSTINSTALL.md ${SRCDIR}/debian/README.md
+          cp README-POSTINSTALL.md ${SRCDIR}/debian/
           sed -e 's/sysconfig/default/' < syncserver.service > ${SRCDIR}/debian/syncserver.service
           sed -e "s/+TARGET+/${TARGET}/g" < debian/changelog.in > ${SRCDIR}/debian/changelog
           rm -f ${SRCDIR}/debian/changelog.in
