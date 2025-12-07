@@ -1,4 +1,5 @@
 syncstorage-rs-nosentry.patch
+syncstorage-rs-populate-tokendb.patch
 syncstorage-rs-updatenodes.patch
 syncstorage-rs-mariadb-compat.patch
 syncstorage-rs-logging.patch
