@@ -1,3 +1,10 @@
+syncstorage-rs (0.21.1-18) +TARGET+; urgency=low
+
+  * Install missing doc README-POSTINSTALL.md
+  * Recommend alternative dependencies
+
+ -- Fritz Elfert <fritz@fritz-elfert.de>  Sun, 07 Dec 2025 17:00:00 -0100
+
 syncstorage-rs (0.21.1-17) +TARGET+; urgency=low
 
   * Deliver debug build in order to be able to log SQL queries
