@@ -8,6 +8,6 @@ Build-Depends: debhelper-compat (= 13), build-essential, rust+RUSTVER+-all, libm
 Package: syncstorage-rs
 Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: mariadb-server, apache2
+Recommends: mariadb-server | mysql-server, apache2 | nginx | caddy
 Description: FireFox syncserver
  This is Mozilla's new syncserver written in Rust
