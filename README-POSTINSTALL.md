@@ -41,7 +41,7 @@ EOF
 ### 4. Setup reverse proxy (apache virtual host)
 
  Here is an example config that goes into `/etc/httpd/conf.d/ffsync.conf` on Fedora or `/etc/apache2/sites-available/ffsync.conf` on Ubuntu:
-(On ubuntu, replace `log/` with `${APACHE_LOG_DIR}`)
+(On Ubuntu, replace `logs/` with `${APACHE_LOG_DIR}`, enable modules `proxy`, `headers` and `ssl` using `a2enmod` and finally use `a2ensite` to enable that configuration)
 ```
 <VirtualHost *:443>
     ServerAdmin me@mydomain.tld
