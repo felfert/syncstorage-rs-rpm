@@ -1,0 +1,108 @@
+name: Build docker images
+
+on:
+  workflow_dispatch:
+
+env:
+  INSTDEPS: "apt-get update && apt-get install -y libmariadb-dev libmariadb-dev-compat libpq-dev"
+  CARGO_TERM_COLOR: always
+  DEBIAN_FRONTEND: noninteractive
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    strategy:
+      matrix:
+        job:
+#          - ref: master
+#            db: mysql
+#            variant: pristine
+#            rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
+#            description: "Latest upstream master, unpatched"
+#          - ref: master
+#            db: postgres
+#            variant: pristine
+#            rtdeps: "libpq5 libssl3t64 libgcc-s1"
+#            description: "Latest upstream master, unpatched - highly experimental and/or unstable"
+          - ref: master
+            db: mysql
+            variant: patched
+            rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
+            patches: "syncstorage-rs-populate-tokendb.masterpatch syncstorage-rs-updatenodes.masterpatch"
+            description: "Latest upstream master, patched implementing self-initialization of databases"
+#          - ref: 0.21.1
+#            db: mysql
+#            variant: pristine
+#            rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
+#            patches: "syncstorage-rs-mariadb-compat.patch syncstorage-rs-nopyverifyer.patch syncstorage-rs-olddburl.patch"
+#            description: "Slightly patched, restoring mariadb compatibility"
+          - ref: 0.21.1
+            db: mysql
+            variant: patched
+            rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
+            patches: "syncstorage-rs-nosentry.patch syncstorage-rs-populate-tokendb.patch syncstorage-rs-updatenodes.patch syncstorage-rs-mariadb-compat.patch syncstorage-rs-nopyverifyer.patch syncstorage-rs-olddburl.patch"
+            description: "Patched implementing self-initialization of databases"
+    runs-on: ubuntu-latest
+    name: Build ${{ matrix.job.ref }}-${{ matrix.job.variant }} with ${{ matrix.job.db }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - uses: actions/checkout@v5
+        with:
+          repository: "mozilla-services/syncstorage-rs"
+          ref: ${{ matrix.job.ref }}
+          path: "syncstorage-rs-${{ matrix.job.ref }}-${{ matrix.job.variant }}"
+          fetch-depth: 1
+      - name: Determine version
+        run: |
+          cd "syncstorage-rs-${{ matrix.job.ref }}-${{ matrix.job.variant }}"
+          echo BUILDDIR=$(pwd) >> $GITHUB_ENV
+          echo BUILDREL="syncstorage-rs-${{ matrix.job.ref }}-${{ matrix.job.variant }}" >> $GITHUB_ENV
+          if [ "${{ matrix.job.ref }}" == "master" ] ; then
+            echo "IMGNAME=master-g$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          else
+            echo "IMGNAME=${{ matrix.job.ref }}" >> $GITHUB_ENV
+          fi
+      - name: Install build dependencies
+        run: sudo sh -c "${{ env.INSTDEPS }}"
+      - name: Install rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build syncserver
+        run: |
+          if [ -n "${{ matrix.job.patches }}" ] ; then
+            for p in  ${{ matrix.job.patches }} ; do
+              echo "Applying $p ..."
+              patch -d ${BUILDDIR} -p1 < $p
+            done
+          fi
+          cargo install --debug --locked --path ${BUILDDIR}/syncserver --target-dir ${BUILDDIR}/target \
+          --no-default-features --features=syncstorage-db/${{ matrix.job.db }}
+          ldd ${{ env.BUILDREL }}/target/debug/syncserver
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: |
+            SYNCSERVER_BIN=${{ env.BUILDREL }}/target/debug/syncserver
+            DEPENDENCIES=${{ matrix.job.rtdeps }}
+            DBTYPE=${{ matrix.job.db }}
+          tags: ghcr.io/${{ github.repository }}/syncserver-${{ env.IMGNAME }}:${{ matrix.job.db }}-${{ matrix.job.variant }}
+          labels: |
+            org.opencontainers.image.description=${{ matrix.job.description }}
+            org.opencontainers.image.licenses=MPL-2.0
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}

@@ -1,0 +1,18 @@
+diff --git a/tokenserver-mysql/migrations/2025-10-13-171027_0000_populate_tokens_and_nodes/down.sql b/tokenserver-mysql/migrations/2025-10-13-171027_0000_populate_tokens_and_nodes/down.sql
+new file mode 100644
+index 0000000..c38173b
+--- /dev/null
++++ b/tokenserver-mysql/migrations/2025-10-13-171027_0000_populate_tokens_and_nodes/down.sql
+@@ -0,0 +1,2 @@
++DELETE FROM services WHERE id=1;
++DELETE FROM nodes WHERE id=1;
+diff --git a/tokenserver-mysql/migrations/2025-10-13-171027_0000_populate_tokens_and_nodes/up.sql b/tokenserver-mysql/migrations/2025-10-13-171027_0000_populate_tokens_and_nodes/up.sql
+new file mode 100644
+index 0000000..414f60e
+--- /dev/null
++++ b/tokenserver-mysql/migrations/2025-10-13-171027_0000_populate_tokens_and_nodes/up.sql
+@@ -0,0 +1,4 @@
++INSERT INTO services (id, service, pattern) VALUES
++    (1, "sync-1.5", "{node}/1.5/{uid}");
++INSERT INTO nodes (id, service, node, available, current_load, capacity, downed, backoff)
++  VALUES (1, 1, 'https://publicurl.tld', 1, 0, 10, 0, 0);

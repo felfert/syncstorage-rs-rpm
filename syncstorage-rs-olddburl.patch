@@ -1,0 +1,22 @@
+diff --git a/syncstorage-mysql/src/pool.rs b/syncstorage-mysql/src/pool.rs
+index fd9eced..ed56b1b 100644
+--- a/syncstorage-mysql/src/pool.rs
++++ b/syncstorage-mysql/src/pool.rs
+@@ -65,7 +65,7 @@ impl MysqlDbPool {
+         metrics: &Metrics,
+         blocking_threadpool: Arc<BlockingThreadpool>,
+     ) -> DbResult<Self> {
+-        run_embedded_migrations(&settings.database_url)?;
++        run_embedded_migrations(&settings.database_url.replace("socket=", "unix_socket="))?;
+         Self::new_without_migrations(settings, metrics, blocking_threadpool)
+     }
+ 
+@@ -74,7 +74,7 @@ impl MysqlDbPool {
+         metrics: &Metrics,
+         blocking_threadpool: Arc<BlockingThreadpool>,
+     ) -> DbResult<Self> {
+-        let manager = ConnectionManager::<MysqlConnection>::new(settings.database_url.clone());
++        let manager = ConnectionManager::<MysqlConnection>::new(settings.database_url.clone().replace("socket=", "unix_socket="));
+         let builder = Pool::builder()
+             .max_size(settings.database_pool_max_size)
+             .connection_timeout(Duration::from_secs(

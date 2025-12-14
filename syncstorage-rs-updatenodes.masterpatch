@@ -1,0 +1,71 @@
+diff --git a/tokenserver-mysql/src/lib.rs b/tokenserver-mysql/src/lib.rs
+index e956382..daab2af 100644
+--- a/tokenserver-mysql/src/lib.rs
++++ b/tokenserver-mysql/src/lib.rs
+@@ -1,5 +1,6 @@
+ mod db;
+ mod pool;
++mod preparenodes;
+ 
+ pub use db::TokenserverDb;
+ pub use pool::TokenserverPool;
+diff --git a/tokenserver-mysql/src/pool.rs b/tokenserver-mysql/src/pool.rs
+index 59c8dca..341508f 100644
+--- a/tokenserver-mysql/src/pool.rs
++++ b/tokenserver-mysql/src/pool.rs
+@@ -120,6 +120,7 @@ impl TokenserverPool {
+ #[async_trait(?Send)]
+ impl DbPool for TokenserverPool {
+     async fn init(&mut self) -> Result<(), DbError> {
++        let dbu = self.database_url.clone();
+         if self.run_migrations {
+             // Mysql DDL statements implicitly commit which could disrupt
+             // MysqlPool's begin_test_transaction during tests. So this runs on
+@@ -129,6 +130,7 @@ impl DbPool for TokenserverPool {
+                     .await?;
+             run_embedded_migrations(conn, MIGRATIONS).await?;
+         }
++        let _ = tokio::task::spawn_blocking(move || crate::preparenodes::prepare_nodes(&dbu)).await;
+ 
+         // NOTE: Provided there's a "sync-1.5" service record in the database, it is highly
+         // unlikely for this query to fail outside of network failures or other random errors
+diff --git a/tokenserver-mysql/src/preparenodes.rs b/tokenserver-mysql/src/preparenodes.rs
+new file mode 100644
+index 0000000..a06421a
+--- /dev/null
++++ b/tokenserver-mysql/src/preparenodes.rs
+@@ -0,0 +1,34 @@
++use tokenserver_db_common::DbResult;
++
++use diesel::Connection;
++use diesel_async::{
++    async_connection_wrapper::AsyncConnectionWrapper,
++    AsyncMysqlConnection,
++};
++
++use diesel::RunQueryDsl;
++use diesel::{
++    sql_types::{Integer, Text},
++};
++
++/// Update nodes from node_url and node_maxusers
++pub fn prepare_nodes(database_url: &str) -> DbResult<()> {
++    const UPDATE_NODE: &str = r"UPDATE nodes SET node = ? WHERE id = 1";
++    const UPDATE_MAXUSERS: &str = r"UPDATE nodes SET capacity = ? WHERE id = 1";
++    let mut conn = AsyncConnectionWrapper::<AsyncMysqlConnection>::establish(database_url)?;
++    let node_url = std::env::var("PUBLIC_URL").unwrap_or_else(|_| "".to_string());
++    let max_clients: i32 = std::env::var("MAX_CLIENTS").unwrap_or_else(|_| "0".to_string()).parse().unwrap_or(0);
++    if !node_url.is_empty() {
++        diesel::sql_query(UPDATE_NODE)
++            .bind::<Text, _>(&node_url)
++            .execute(&mut conn)
++            .unwrap_or(0);
++    }
++    if max_clients > 0 {
++        diesel::sql_query(UPDATE_MAXUSERS)
++            .bind::<Integer, _>(max_clients)
++            .execute(&mut conn)
++            .unwrap_or(0);
++    }
++    Ok(())
++}
