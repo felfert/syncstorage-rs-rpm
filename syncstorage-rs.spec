@@ -82,6 +82,7 @@ CDIR="$(pwd)/tmpcargo"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | HOME=${CDIR} sh -s -- -y --no-modify-path
 export PATH="${CDIR}/.cargo/bin:$PATH"
 HOME=${CDIR} cargo install --debug --locked --path ./syncserver --no-default-features --features=syncstorage-db/mysql
+rm -rf "${CDIR}"
 %endif
 
 %install
