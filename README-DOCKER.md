@@ -67,4 +67,6 @@ podman run --name syncserver -v ./syncserver.toml:/app/syncserver.toml -v /var/l
     -p 8000:8000 -e RUST_LOG=info -e MAX_CLIENTS=1 -e PUBLIC_URL=https://fritz.fe.think -e SYNC_CONFIG=/app/syncserver.toml \
     --rm -it $IMG
 ```
+Of course, the `-it` above is for testing only. In a normal setup one would use `-d` to put the container in the background instead.
+
 For apache reverse-proxy setup refer to [this doc](https://github.com/felfert/syncstorage-rs-rpm/blob/main/README-POSTINSTALL.md#4-setup-reverse-proxy-apache-virtual-host)
