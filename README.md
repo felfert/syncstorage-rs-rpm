@@ -10,4 +10,4 @@ This is the source for packaging [Mozilla's syncstorage-rs syncserver](https://g
 ### Documentation
 
 [Post-install setup for RPMs and DEBs](README-POSTINSTALL.md) Partially applies to docker images as well (reverse proxy, mariadb)
-[Docker-specific instructions](README-Docker.md) (TBD)
+[Docker-specific instructions](README-DOCKER.md)
