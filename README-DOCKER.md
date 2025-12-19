@@ -58,7 +58,7 @@ tokenserver.fxa_browserid_server_url = "https://verifier.accounts.firefox.com"
 # cors_allowed_origin = "localhost"
 # cors_max_age = 86400
 ```
-For the database setup, refer to [this doc](README-POSTINSTALL.md#1.-Create-a-mariadb-user-and-database)
+For the database setup, refer to [this doc](https://github.com/felfert/syncstorage-rs-rpm/blob/main/README-POSTINSTALL.md#1-create-a-mariadb-user-and-database)
 Startup using this configfile (both the config file and the mariadb socket, get mapped into the /app directory of the image):
 ```
 IMG="ghcr.io/felfert/syncstorage-rs-rpm/syncserver-0.21.1:mysql-patched"
@@ -67,4 +67,4 @@ podman run --name syncserver -v ./syncserver.toml:/app/syncserver.toml -v /var/l
     -p 8000:8000 -e RUST_LOG=info -e MAX_CLIENTS=1 -e PUBLIC_URL=https://fritz.fe.think -e SYNC_CONFIG=/app/syncserver.toml \
     --rm -it $IMG
 ```
-For apache reverse-proxy setup refer to [this doc](README-POSTINSTALL.md#4.-Setup-reverse-proxy-(apache-virtual-host))
+For apache reverse-proxy setup refer to [this doc](https://github.com/felfert/syncstorage-rs-rpm/blob/main/README-POSTINSTALL.md#4-setup-reverse-proxy-apache-virtual-host)
