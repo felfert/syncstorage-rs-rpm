@@ -1,6 +1,6 @@
 Name:           syncstorage-rs
 Version:        0.21.1
-Release:        20%{?dist}
+Release:        21%{?dist}
 Summary:        Mozilla Sync Storage built with Rust
 License:        MPL-2.0+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -60,6 +60,12 @@ Patch4:         syncstorage-rs-logging.patch
 # Increase max loglevel to trace for release builds
 Patch5:         syncstorage-rs-allow-trace.patch
 
+# Tweak socket parameter to fit old syntax in syncstorage DB
+Patch6:         syncstorage-rs-olddburl.patch
+
+# Fix a compilere warning
+Patch7:         syncstorage-rs-nopyverifyer.patch
+
 %description
 %{name} is Mozilla's new firefox sync server written in Rust.
 
@@ -71,6 +77,8 @@ Patch5:         syncstorage-rs-allow-trace.patch
 %patch 3 -p1 -b .mariadb
 %patch 4 -p1 -b .logging
 %patch 5 -p1 -b .allowtrace
+%patch 6 -p1 -b .olddburl
+%patch 7 -p1 -b .fixwarn
 cp %{SOURCE1} .
 
 %build
@@ -119,6 +127,9 @@ exit 0
 %doc README-POSTINSTALL.md
 
 %changelog
+* Fri Dec 19 2025 Fritz Elfert <fritz@fritz-elfert.de>
+- Fix socket parameter of syncstorage DB
+- Fix compiler warning
 * Thu Dec 18 2025 Fritz Elfert <fritz@fritz-elfert.de>
 - Bump up release to get in sync with deb package
 * Sun Dec  7 2025 Fritz Elfert <fritz@fritz-elfert.de>
