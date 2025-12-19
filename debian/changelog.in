@@ -1,3 +1,10 @@
+syncstorage-rs (0.21.1-21) +TARGET+; urgency=low
+
+  * Tweak socket parameter to fit old syntax in syncstorage DB
+  * Fix a compiler warning
+
+ -- Fritz Elfert <fritz@fritz-elfert.de>  Fri, 19 Dec 2025 14:18:00 -0100
+
 syncstorage-rs (0.21.1-20) +TARGET+; urgency=low
 
   * Fixed typo in syncserver.toml on deb

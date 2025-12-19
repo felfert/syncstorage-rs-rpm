@@ -4,5 +4,7 @@ syncstorage-rs-updatenodes.patch
 syncstorage-rs-mariadb-compat.patch
 syncstorage-rs-logging.patch
 syncstorage-rs-allow-trace.patch
+syncstorage-rs-olddburl.patch
+syncstorage-rs-nopyverifyer.patch
 syncstorage-rs-vendor.patch
 debian-makefile.patch
