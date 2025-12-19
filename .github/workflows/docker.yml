@@ -18,28 +18,28 @@ jobs:
     strategy:
       matrix:
         job:
-#          - ref: master
-#            db: mysql
-#            variant: pristine
-#            rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
-#            description: "Latest upstream master, unpatched"
-#          - ref: master
-#            db: postgres
-#            variant: pristine
-#            rtdeps: "libpq5 libssl3t64 libgcc-s1"
-#            description: "Latest upstream master, unpatched - highly experimental and/or unstable"
+          - ref: master
+            db: mysql
+            variant: pristine
+            rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
+            description: "Latest upstream master, unpatched"
+          - ref: master
+            db: postgres
+            variant: pristine
+            rtdeps: "libpq5 libssl3t64 libgcc-s1"
+            description: "Latest upstream master, unpatched - highly experimental and/or unstable"
           - ref: master
             db: mysql
             variant: patched
             rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
             patches: "syncstorage-rs-populate-tokendb.masterpatch syncstorage-rs-updatenodes.masterpatch"
             description: "Latest upstream master, patched implementing self-initialization of databases"
-#          - ref: 0.21.1
-#            db: mysql
-#            variant: pristine
-#            rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
-#            patches: "syncstorage-rs-mariadb-compat.patch syncstorage-rs-nopyverifyer.patch syncstorage-rs-olddburl.patch"
-#            description: "Slightly patched, restoring mariadb compatibility"
+          - ref: 0.21.1
+            db: mysql
+            variant: pristine
+            rtdeps: "libmariadb3 libssl3t64 libgcc-s1"
+            patches: "syncstorage-rs-mariadb-compat.patch syncstorage-rs-nopyverifyer.patch syncstorage-rs-olddburl.patch"
+            description: "Slightly patched, restoring mariadb compatibility"
           - ref: 0.21.1
             db: mysql
             variant: patched
