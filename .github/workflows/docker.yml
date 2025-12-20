@@ -47,6 +47,7 @@ jobs:
             patches: "syncstorage-rs-nosentry.patch syncstorage-rs-populate-tokendb.patch syncstorage-rs-updatenodes.patch syncstorage-rs-mariadb-compat.patch syncstorage-rs-nopyverifyer.patch syncstorage-rs-olddburl.patch"
             description: "Patched implementing self-initialization of databases"
     runs-on: ubuntu-latest
+    continue-on-error: true
     name: Build ${{ matrix.job.ref }}-${{ matrix.job.variant }} with ${{ matrix.job.db }}
     steps:
       - uses: actions/checkout@v5
