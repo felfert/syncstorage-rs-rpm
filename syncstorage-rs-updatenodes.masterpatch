@@ -1,3 +1,12 @@
+diff --git a/tokenserver-mysql/Cargo.toml b/tokenserver-mysql/Cargo.toml
+index 95ead51..fc3d128 100644
+--- a/tokenserver-mysql/Cargo.toml
++++ b/tokenserver-mysql/Cargo.toml
+@@ -18,3 +18,4 @@ syncserver-db-common = { path = "../syncserver-db-common" }
+ tokenserver-common = { path = "../tokenserver-common" }
+ tokenserver-db-common = { path = "../tokenserver-db-common" }
+ tokenserver-settings = { path = "../tokenserver-settings" }
++tokio = { workspace = true, features = ["macros", "sync"] }
 diff --git a/tokenserver-mysql/src/lib.rs b/tokenserver-mysql/src/lib.rs
 index e956382..daab2af 100644
 --- a/tokenserver-mysql/src/lib.rs
